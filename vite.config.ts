@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // Uncomment and set base path when deploying to GitHub Pages
-  // base: '/teleparty-chat-app/',
+  base: '/teleparty-chat-app/',
 })

@@ -4,7 +4,7 @@ This project is a simplified real-time chat application built as part of the Tel
 It demonstrates real-time communication using the Teleparty WebSocket library, with a clean, event-driven React architecture.
 
 🚀 Live Demo
-👉 Live App: https://<your-username>.github.io/<repo-name>/
+👉 Live App:  https://akshaj-work.github.io/teleparty-chat-app/
 
 Deployed using GitHub Pages with client-side routing support.
 
