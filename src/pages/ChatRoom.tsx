@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import type {
   SessionChatMessage,
   TypingMessageData,
@@ -15,6 +15,10 @@ export default function ChatRoom() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const nickname = searchParams.get('nickname') || '';
+
+  const location = useLocation();
+  const alreadyJoined = location.state?.alreadyJoined === true;
+
 
   const [messages, setMessages] = useState<SessionChatMessage[]>([]);
   const [anyoneTyping, setAnyoneTyping] = useState(false);
@@ -68,25 +72,30 @@ export default function ChatRoom() {
     telepartyClient.onClose(handleClose);
 
     const join = async () => {
-      try {
-        const messageList = await telepartyClient.joinChatRoom(
-          nickname,
-          roomId
-        );
+  try {
+    if (!alreadyJoined) {
+      const messageList = await telepartyClient.joinChatRoom(
+        nickname,
+        roomId
+      );
 
-        if (messageList?.messages) {
-          setMessages(messageList.messages);
-        }
-
-        setIsConnected(true);
-        setIsLoading(false);
-      } catch (err) {
-        const msg =
-          err instanceof Error ? err.message : 'Unknown error';
-        setError(`Failed to connect to room: ${msg}`);
-        setIsLoading(false);
+      if (messageList?.messages) {
+        setMessages(messageList.messages);
       }
-    };
+    }
+
+    // ✅ IMPORTANT: both flows end up connected
+    setIsConnected(true);
+    setIsLoading(false);
+
+  } catch (err) {
+    const msg =
+      err instanceof Error ? err.message : 'Unknown error';
+    setError(`Failed to connect to room: ${msg}`);
+    setIsLoading(false);
+  }
+};
+
 
     join();
 
@@ -94,7 +103,7 @@ export default function ChatRoom() {
       // Do NOT teardown socket here.
       // Leave is handled explicitly.
     };
-  }, [roomId, nickname]);
+  }, [roomId, nickname, alreadyJoined, userPermId]);
 
   // ---- Send message ----
   const handleSendMessage = useCallback((text: string) => {

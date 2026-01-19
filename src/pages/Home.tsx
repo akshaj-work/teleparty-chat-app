@@ -32,7 +32,11 @@ export default function Home() {
 
     try {
       const roomId = await telepartyClient.createChatRoom(nickname);
-      navigate(`/room/${roomId}?nickname=${encodeURIComponent(nickname)}`);
+      navigate(
+        `/room/${roomId}?nickname=${encodeURIComponent(nickname)}`,
+        { state: { alreadyJoined: true } }
+      );
+
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Unknown error';
